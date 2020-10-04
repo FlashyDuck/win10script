@@ -12,7 +12,7 @@
 #
 #	Addition: One command to rule them all, One command to find it, and One command to Run it! 
 #
-#     > powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://git.io/JJ8R4')"
+#     > powershell -nop -c "iex(New-Object Net.WebClient).DownloadString('https://git.io/JU1yj')" 
 #
 #	Chris Titus Additions:
 #
@@ -23,18 +23,42 @@
 #	- Added Install Programs
 #	- Added Debloat Microsoft Store Apps
 #
+#	FlashyDuck Additions:
+#
+#	- Enable Restore point
+#	- Create Restore point beginning of script
+#	- Remove some extra programs (Adobe, MPC-HC). Only nessacery programs for first use like 7Zip, Notepadplusplus and Veracrypt (yes, you need encryption).
+#		- Create your own install list for Chocolatey and run that in Powershell after running this script.
+#	- Added chocolateygui to chocolatey install fuction
+#	- Enable Indexing
+#	- Enable Firewall
+#	- Enable Defender Cloud
+#	- Enable Defender (will be disabled when other AV is installed, but till then you're good)
+#	- Meltdown bugfix - disabled because of performance loss
+#	- Disable Remote Desktop (use Anydesk)
+#	- Hide documents, downloads, music, videos, desktop from explorer
+# 	- Hide hidden files
+#	- Hide recent shortcuts
+#	- Don't install MediaPlayer (use MPC-HC or VLC)
+#	- Leave MS Paint alone!
+#	- InstallMsftBloat > leave Sticky Notes and MSPaint
+#	
+#	- Remove FaxPrinter
+#	- Set TaskbarCombine to Always
+#	
+#
 ##########
 # Default preset
 $tweaks = @(
 	### Require administrator privileges ###
 	"RequireAdmin",
-
+	"CreateRestorePoint",
+	
 	### External Program Setup
 	"InstallTitusProgs", #REQUIRED FOR OTHER PROGRAM INSTALLS!
-	"InstallAdobe",
 	"Install7Zip",
 	"InstallNotepadplusplus",
-	"InstallMediaPlayerClassic",
+	"InstallVeracrypt",
 
 	### Windows Apps
 	"DebloatAll",
@@ -42,7 +66,7 @@ $tweaks = @(
 	### Privacy Tweaks ###
 	"DisableTelemetry",             # "EnableTelemetry",
 	"DisableWiFiSense",             # "EnableWiFiSense",
-	"DisableSmartScreen",         # "EnableSmartScreen",
+	"DisableSmartScreen",         	# "EnableSmartScreen",
 	"DisableWebSearch",             # "EnableWebSearch",
 	"DisableAppSuggestions",        # "EnableAppSuggestions",
 	"DisableActivityHistory",       # "EnableActivityHistory",
@@ -54,67 +78,67 @@ $tweaks = @(
 	"DisableAdvertisingID",         # "EnableAdvertisingID",
 	"DisableCortana",               # "EnableCortana",
 	"DisableErrorReporting",        # "EnableErrorReporting",
-	"SetP2PUpdateLocal",          # "SetP2PUpdateInternet",
+	"SetP2PUpdateLocal",          	# "SetP2PUpdateInternet",
 	"DisableDiagTrack",             # "EnableDiagTrack",
 	"DisableWAPPush",               # "EnableWAPPush",
 
 	### Security Tweaks ###
-	"SetUACLow",                  # "SetUACHigh",
+	# "SetUACHigh",					# "SetUACLow",                  
 	# "EnableSharingMappedDrives",  # "DisableSharingMappedDrives",
-	# "DisableAdminShares",           # "EnableAdminShares",
-	"DisableSMB1",                # "EnableSMB1",
+	# "DisableAdminShares",         # "EnableAdminShares",
+	"DisableSMB1",                	# "EnableSMB1",
 	# "DisableSMBServer",           # "EnableSMBServer",
 	# "DisableLLMNR",               # "EnableLLMNR",
 	"SetCurrentNetworkPrivate",     # "SetCurrentNetworkPublic",
-	"SetUnknownNetworksPrivate",  # "SetUnknownNetworksPublic",
-	"DisableNetDevicesAutoInst",  # "EnableNetDevicesAutoInst",
-	"DisableCtrldFolderAccess",	# "EnableCtrldFolderAccess",
-	# "DisableFirewall",            # "EnableFirewall",
-	"DisableDefender",            # "EnableDefender",
-	"DisableDefenderCloud",       # "EnableDefenderCloud",
+	"SetUnknownNetworksPrivate",  	# "SetUnknownNetworksPublic",
+	"DisableNetDevicesAutoInst",  	# "EnableNetDevicesAutoInst",
+	"DisableCtrldFolderAccess",		# "EnableCtrldFolderAccess",
+	"EnableFirewall",				# "DisableFirewall",
+	"EnableDefender",				# "DisableDefender",
+	"EnableDefenderCloud",			# "DisableDefenderCloud",
 	"EnableF8BootMenu",             # "DisableF8BootMenu",
-	#"SetDEPOptOut",                 # "SetDEPOptIn",
+	#"SetDEPOptOut",                # "SetDEPOptIn",
 	# "EnableCIMemoryIntegrity",    # "DisableCIMemoryIntegrity",
-	#"DisableScriptHost",            # "EnableScriptHost",
-	#"EnableDotNetStrongCrypto",     # "DisableDotNetStrongCrypto",
-	"DisableMeltdownCompatFlag", # "EnableMeltdownCompatFlag"    
+	#"DisableScriptHost",           # "EnableScriptHost",
+	#"EnableDotNetStrongCrypto",    # "DisableDotNetStrongCrypto",
+	"DisableMeltdownCompatFlag", 	# "EnableMeltdownCompatFlag"    
 
 	### Service Tweaks ###
-	"DisableUpdateMSRT",          # "EnableUpdateMSRT",
-	"DisableUpdateDriver",        # "EnableUpdateDriver",
+	"DisableUpdateMSRT",          	# "EnableUpdateMSRT",
+	"DisableUpdateDriver",        	# "EnableUpdateDriver",
 	"DisableUpdateRestart",         # "EnableUpdateRestart",
-	"DisableHomeGroups",          # "EnableHomeGroups",
+	"DisableHomeGroups",          	# "EnableHomeGroups",
 	"DisableSharedExperiences",     # "EnableSharedExperiences",
 	"DisableRemoteAssistance",      # "EnableRemoteAssistance",
-	"EnableRemoteDesktop",          # "DisableRemoteDesktop",
+	"DisableRemoteDesktop",         # "EnableRemoteDesktop",
 	"DisableAutoplay",              # "EnableAutoplay",
 	"DisableAutorun",               # "EnableAutorun",
-	"DisableStorageSense",        # "EnableStorageSense",
-	"DisableDefragmentation",     # "EnableDefragmentation",
-	"DisableSuperfetch",          # "EnableSuperfetch",
-	"DisableIndexing",            # "EnableIndexing",
-	"SetBIOSTimeUTC",             # "SetBIOSTimeLocal",
-	"DisableHibernation",		# "EnableHibernation",          # 
-	"EnableSleepButton",		# "DisableSleepButton",         
-	"DisableSleepTimeout",        # "EnableSleepTimeout",
+	"DisableStorageSense",        	# "EnableStorageSense",
+	"DisableDefragmentation",     	# "EnableDefragmentation",
+	"DisableSuperfetch",          	# "EnableSuperfetch",
+	"EnableIndexing",
+	"SetBIOSTimeUTC",             	# "SetBIOSTimeLocal",
+	"DisableHibernation",			# "EnableHibernation",           
+	"EnableSleepButton",			# "DisableSleepButton",         
+	"DisableSleepTimeout",        	# "EnableSleepTimeout",
 	# "DisableFastStartup",         # "EnableFastStartup",
 
 	### UI Tweaks ###
 	"DisableActionCenter",          # "EnableActionCenter",
-	"EnableLockScreen",		# "DisableLockScreen",
-	"DisableLockScreenRS1",       # "EnableLockScreenRS1",
-	# "HideNetworkFromLockScreen",    # "ShowNetworkOnLockScreen",
-	# "HideShutdownFromLockScreen",   # "ShowShutdownOnLockScreen",
+	"EnableLockScreen",				# "DisableLockScreen",
+	"DisableLockScreenRS1",       	# "EnableLockScreenRS1",
+	# "HideNetworkFromLockScreen",  # "ShowNetworkOnLockScreen",
+	# "HideShutdownFromLockScreen", # "ShowShutdownOnLockScreen",
 	"DisableStickyKeys",            # "EnableStickyKeys",
 	"ShowTaskManagerDetails"        # "HideTaskManagerDetails",
 	"ShowFileOperationsDetails",    # "HideFileOperationsDetails",
-	"DisableFileDeleteConfirm",	# "EnableFileDeleteConfirm",    
+	"DisableFileDeleteConfirm",		# "EnableFileDeleteConfirm",    
 	#"HideTaskbarSearch",
-	"ShowTaskbarSearchIcon",      # "ShowTaskbarSearchBox",
+	"ShowTaskbarSearchIcon",      	# "ShowTaskbarSearchBox",
 	"HideTaskView",                 # "ShowTaskView",
-	# "ShowSmallTaskbarIcons",        # "ShowLargeTaskbarIcons",
-	# "SetTaskbarCombineWhenFull",    # "SetTaskbarCombineNever",     # "SetTaskbarCombineAlways",
-	# "HideTaskbarPeopleIcon",        # "ShowTaskbarPeopleIcon",
+	# "ShowSmallTaskbarIcons",      # "ShowLargeTaskbarIcons",
+	"SetTaskbarCombineAlways",		# "SetTaskbarCombineWhenFull",  # "SetTaskbarCombineNever",
+	# "HideTaskbarPeopleIcon",      # "ShowTaskbarPeopleIcon",
 	"ShowTrayIcons",                # "HideTrayIcons",
 	"DisableSearchAppInStore",      # "EnableSearchAppInStore",
 	"DisableNewAppPrompt",          # "EnableNewAppPrompt",
@@ -127,47 +151,47 @@ $tweaks = @(
 
 	### Explorer UI Tweaks ###
 	"ShowKnownExtensions",          # "HideKnownExtensions",
-	# "ShowHiddenFiles",              # "HideHiddenFiles",
+	"HideHiddenFiles",
 	"HideSyncNotifications"         # "ShowSyncNotifications",
-	# "HideRecentShortcuts",          # "ShowRecentShortcuts",
+	"HideRecentShortcuts",        # "ShowRecentShortcuts",
 	"SetExplorerThisPC",            # "SetExplorerQuickAccess",
-	"HideThisPCFromDesktop",	# "ShowThisPCOnDesktop",
+	"HideThisPCFromDesktop",		# "ShowThisPCOnDesktop",
 	# "ShowUserFolderOnDesktop",    # "HideUserFolderFromDesktop",
-	# "HideDesktopFromThisPC",        # "ShowDesktopInThisPC",
-	# "HideDesktopFromExplorer",    # "ShowDesktopInExplorer",
-	# "HideDocumentsFromThisPC",      # "ShowDocumentsInThisPC",
-	# "HideDocumentsFromExplorer",  # "ShowDocumentsInExplorer",
-	# "HideDownloadsFromThisPC",      # "ShowDownloadsInThisPC",
-	# "HideDownloadsFromExplorer",  # "ShowDownloadsInExplorer",
-	"HideMusicFromThisPC",          # "ShowMusicInThisPC",
-	"HideMusicFromExplorer",      # "ShowMusicInExplorer",
-	# "HidePicturesFromThisPC",       # "ShowPicturesInThisPC",
-	# "HidePicturesFromExplorer",   # "ShowPicturesInExplorer",
-	"HideVideosFromThisPC",         # "ShowVideosInThisPC",
-	"HideVideosFromExplorer",     # "ShowVideosInExplorer",
+	# "HideDesktopFromThisPC",      # "ShowDesktopInThisPC",
+	"HideDesktopFromExplorer",    # "ShowDesktopInExplorer",
+	# "HideDocumentsFromThisPC",    # "ShowDocumentsInThisPC",
+	"HideDocumentsFromExplorer",  # "ShowDocumentsInExplorer",
+	# "HideDownloadsFromThisPC",    # "ShowDownloadsInThisPC",
+	"HideDownloadsFromExplorer",  # "ShowDownloadsInExplorer",
+	# "HideMusicFromThisPC",          # "ShowMusicInThisPC",
+	"HideMusicFromExplorer",      	# "ShowMusicInExplorer",
+	# "HidePicturesFromThisPC",     # "ShowPicturesInThisPC",
+	"HidePicturesFromExplorer",   # "ShowPicturesInExplorer",
+	# "HideVideosFromThisPC",         # "ShowVideosInThisPC",
+	"HideVideosFromExplorer",     	# "ShowVideosInExplorer",
 	"Hide3DObjectsFromThisPC",      # "Show3DObjectsInThisPC",
-	"Hide3DObjectsFromExplorer",  # "Show3DObjectsInExplorer",
+	"Hide3DObjectsFromExplorer",  	# "Show3DObjectsInExplorer",
 	# "DisableThumbnails",          # "EnableThumbnails",
-	# "DisableThumbsDB",              # "EnableThumbsDB",
+	# "DisableThumbsDB",            # "EnableThumbsDB",
 
 	### Application Tweaks ###
 	"DisableOneDrive",              # "EnableOneDrive",
 	"UninstallOneDrive",            # "InstallOneDrive",
 	"UninstallMsftBloat",           # "InstallMsftBloat",
-	"UninstallThirdPartyBloat",     # "InstallThirdPartyBloat",
+	"UninstallThirdPartyBloat",     # "InstallThirdPartyBloat",	
 	# "UninstallWindowsStore",      # "InstallWindowsStore",
-	# "DisableXboxFeatures",          # "EnableXboxFeatures",
+	# "DisableXboxFeatures",        # "EnableXboxFeatures",
 	"DisableAdobeFlash",            # "EnableAdobeFlash",
-	"InstallMediaPlayer", 		# "UninstallMediaPlayer",
-	"UninstallInternetExplorer",  # "InstallInternetExplorer",
-	"UninstallWorkFolders",       # "InstallWorkFolders",
-	"InstallLinuxSubsystem",      # "UninstallLinuxSubsystem",
+	"UninstallMediaPlayer",
+	"UninstallInternetExplorer",  	# "InstallInternetExplorer",
+	"UninstallWorkFolders",       	# "InstallWorkFolders",
+	"InstallLinuxSubsystem",      	# "UninstallLinuxSubsystem",
 	# "InstallHyperV",              # "UninstallHyperV",
 	"SetPhotoViewerAssociation",    # "UnsetPhotoViewerAssociation",
 	"AddPhotoViewerOpenWith",       # "RemovePhotoViewerOpenWith",
-	"InstallPDFPrinter",		# "UninstallPDFPrinter",
-	# "UninstallXPSPrinter",          # "InstallXPSPrinter",
-	# "RemoveFaxPrinter",             # "AddFaxPrinter",
+	"InstallPDFPrinter",			# "UninstallPDFPrinter",
+	"UninstallXPSPrinter",        # "InstallXPSPrinter",
+	"RemoveFaxPrinter",           # "AddFaxPrinter",
 
 	### Server Specific Tweaks ###
 	# "HideServerManagerOnLogin",   # "ShowServerManagerOnLogin",
@@ -178,12 +202,9 @@ $tweaks = @(
 	# "EnableAudio",                # "DisableAudio",
 
 	### Unpinning ###
-	"UnpinStartMenuTiles",
-	#"UnpinTaskbarIcons",
+	"UnpinStartMenuTiles"
+	# "UnpinTaskbarIcons",
 
-	### Auxiliary Functions ###
-	"WaitForKey"
-	"Restart"
 )
 
 #########
@@ -193,22 +214,12 @@ $tweaks = @(
 Function InstallTitusProgs {
 	Write-Output "Installing Chocolatey"
 	Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-	choco install chocolatey-core.extension -y
+	choco install chocolatey-core.extension chocolateygui -y
 	Write-Output "Running O&O Shutup with Recommended Settings"
 	Import-Module BitsTransfer
 	Start-BitsTransfer -Source "https://raw.githubusercontent.com/ChrisTitusTech/win10script/master/ooshutup10.cfg" -Destination ooshutup10.cfg
 	Start-BitsTransfer -Source "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -Destination OOSU10.exe
 	./OOSU10.exe ooshutup10.cfg /quiet
-}
-
-Function InstallAdobe {
-	Write-Output "Installing Adobe Acrobat Reader"
-	choco install adobereader -y
-}
-
-Function InstallJava {
-	Write-Output "Installing Java"
-	choco install jre8 -y
 }
 
 Function Install7Zip {
@@ -221,9 +232,13 @@ Function InstallNotepadplusplus {
 	choco install notepadplusplus -y
 }
 
-Function InstallMediaPlayerClassic {
-	Write-Output "Installing Media Player Classic (VLC Alternative)"
-	choco install mpc-hc -y
+#########
+# Recommended FlashyDuck Programs
+#########
+
+Function InstallVeracrypt {
+	Write-Output "Installing Veracrypt disk encryption"
+	choco install veracrypt -y
 }
 
 ##########
@@ -570,8 +585,6 @@ Function EnableWAPPush {
 	Start-Service "dmwappushservice" -WarningAction SilentlyContinue
 	Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\dmwappushservice" -Name "DelayedAutoStart" -Type DWord -Value 1
 }
-
-
 
 ##########
 # Security Tweaks
@@ -1948,7 +1961,6 @@ Function UninstallMsftBloat {
 	Get-AppxPackage "Microsoft.MicrosoftSolitaireCollection" | Remove-AppxPackage
 	Get-AppxPackage "Microsoft.MicrosoftStickyNotes" | Remove-AppxPackage
 	Get-AppxPackage "Microsoft.MinecraftUWP" | Remove-AppxPackage
-	Get-AppxPackage "Microsoft.MSPaint" | Remove-AppxPackage
 	Get-AppxPackage "Microsoft.NetworkSpeedTest" | Remove-AppxPackage
 	Get-AppxPackage "Microsoft.Office.OneNote" | Remove-AppxPackage
 	Get-AppxPackage "Microsoft.Office.Sway" | Remove-AppxPackage
@@ -1989,9 +2001,7 @@ Function InstallMsftBloat {
 	Get-AppxPackage -AllUsers "Microsoft.MicrosoftOfficeHub" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.MicrosoftPowerBIForWindows" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.MicrosoftSolitaireCollection" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
-	Get-AppxPackage -AllUsers "Microsoft.MicrosoftStickyNotes" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.MinecraftUWP" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
-	Get-AppxPackage -AllUsers "Microsoft.MSPaint" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.NetworkSpeedTest" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.Office.OneNote" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
 	Get-AppxPackage -AllUsers "Microsoft.Office.Sway" | ForEach {Add-AppxPackage -DisableDevelopmentMode -Register "$($_.InstallLocation)\AppXManifest.xml"}
@@ -2513,6 +2523,12 @@ Function Stop-EdgePDF {
         Set-Item $Edge AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723_ 
     }
 }
+
+Function CreateRestorePoint {
+	Write-Output "Creating Restore Point JIC"
+	Enable-ComputerRestore -Drive "C:\"
+	Checkpoint-Computer -Description "RestorePoint1" -RestorePointType "MODIFY_SETTINGS"
+}	
 
 Function DebloatAll {
 
